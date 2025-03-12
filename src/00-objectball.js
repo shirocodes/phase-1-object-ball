@@ -160,114 +160,77 @@ function playerNumbers(teamName) {     //get jersey numbers
 }
 console.log('Jersey Numbers are:', playerNumbers('Charlotty'))
 
-//get an object of player's stats
-function playerStats(playerName) {
-    const match = gameObject();
-    for (const team of [match.home, match.away]) {
-        if (team.players[playerName]) {
-            return team.players[playerName];
-        }
-    }
-    return `${playerName}'s stats not found!`;
+//get player's stats
+function playerStats(playerName) {     
+    const player = returnPlayer(playerName);
+    return player || undefined
 }
+console.log('The stats are:', playerStats('Bismak Biyombo'))
 
 //Find largest shoe-sized player's rebounds
 function bigShoeRebounds(){
-    const match = gameObject();
-    let bigFootPlayer = null;
-    let biggestSize = -Infinity;
-
-    for (const team of [match.home, match.away]) {
-        const listOfPlayers = Object.values(team.players);
-        for (const player of listOfPlayers) {
-            if(player.shoe > biggestSize) {
-                biggestSize = player.shoe;
-                bigFootPlayer = player;
-            }
-        }
-    }
-    return bigFootPlayer ? bigFootPlayer.rebounds : undefined;
+    const collectionOne = [     //collecting players into one array
+        ...Object.values(match.home.players),
+        ...Object.values(match.away.players)
+    ];
+    if (!collectionOne.length) return 0;
+    const largeSizePlayer = collectionOne.reduce((acc, player) =>
+        player.shoe > acc.shoe ? player : acc, collectionOne[0]);
+    return largeSizePlayer.rebounds;
 }
+console.log('the bigfoot has:', bigShoeRebounds())
 
 //find the player with most points
+const collectionTwo = [     //collecting players into one array
+    ...Object.entries(match.home.players),
+    ...Object.entries(match.away.players)
+];
 function mostPointsScored() {
-    const match = gameObject();
-    let bestPlayer = null;
-    let mostPoints = - Infinity;
-
-    for (const team of [match.home, match.away]) {
-        const listOfPlayers = Object.entries(team.players);
-        for (const [playerName, stats] of listOfPlayers) {
-            if (stats.points > mostPoints) {
-                mostPoints = stats.points;
-                bestPlayer = playerName;
-            }
-        }
-    }
-    return bestPlayer || undefined;
+    if (!collectionTwo.length) return 0;
+    const topScorer = collectionTwo.reduce((acc, [playerName, stats]) =>
+        stats.points > acc[1].points ? [playerName, stats] : acc, collectionTwo[0]);
+    return topScorer[0];  
 }
+console.log('Most points:', mostPointsScored())
 
 //Team with most points
 const winningTeam = () => {
-    const match = gameObject();
-    let bestTeam = null;
-    let maxPoints = -Infinity;
-
-    for (const team of [match.home, match.away]) {
-        let teamTotalPoints = 0;
-        const listOfPlayers = Object.values(team.players);
-        for (const player of listOfPlayers) {
-            teamTotalPoints += player.points;
-        }
-        if (teamTotalPoints > maxPoints) {
-            maxPoints = teamTotalPoints;
-            bestTeam = team.teamName;
-        }
-    }
-    return bestTeam || undefined;
+    const teams = [match.home, match.away];
+    if (!teams.length) return 'Undefined teams.';
+    const topTeam = teams.reduce( (acc, team) => {
+        const allPoints = Object.values(team.players).reduce((amount, player) => {
+            return amount + player.points;
+        }, 0);
+        return allPoints > acc.points ? {nameOfTeam: team.teamName, points: allPoints} : acc;   
+    }, {nameOfTeam: teams[0].teamName, points: Object.values(teams[0].players).reduce((amount, player) =>
+            amount + player.points, 0)})
+    return topTeam.nameOfTeam;
 }
+console.log('the winning team is:', winningTeam())
 
 //Finding the player with longest name
 const playerWithLongestName = () => {
-    const match = gameObject();
-    let moreCharsName = "";
-
-
-    for (const team of [match.home, match.away]) {
-        const playerNames = Object.keys(team.players)
-        for (const playerName of playerNames) {
-
-            if(playerName.length > moreCharsName.length) {
-             moreCharsName = playerName;
-        }
-        }
-    }
-    
-    return moreCharsName || undefined;
+    const namingCollection = [     //collecting players into one array
+        ...Object.keys(match.home.players),
+        ...Object.keys(match.away.players)
+    ];
+    if (!namingCollection.length) return undefined
+    return namingCollection.reduce((acc, playerName) => 
+        playerName.length > acc.length ? playerName : acc,namingCollection);
 }
+console.log('this player is:', playerWithLongestName())
 
-//
+//finding if longnamedplayers has most steals
 const doesLongNameStealATon = () => {
-    const match = gameObject();
-    const maxNamePlayer = playerWithLongestName();
-
-    if (!maxNamePlayer) {
-        return false
-    };
-
-    let maxNamePlayerSteals = 0;
-    let maxSteals = 0;
-
-    for (const team of [match.home, match.away]) { //checking max steals in all teams
-        if (team.players[maxNamePlayer]) {
-            maxNamePlayerSteals = team.players[maxNamePlayer].steals;
-        }
-        for (const stats of Object.values(team.players)) { //checking among of players 
-            if (stats.steals > maxSteals) {
-                maxSteals = stats.steals;
-            }
-        }
-    }
-    return maxNamePlayerSteals === maxSteals
-
+    if (!collectionTwo.length) return undefined; //Reusing collection in mostPointsScored()
+    const longNamedPlayer = playerWithLongestName();
+    if (longNamedPlayer === 'undefined players') return undefined;
+            //get the longnamedplayer's steals
+    const topSteals = collectionTwo.reduce((acc, [, stats]) => 
+        stats.steals > acc ? stats.steals : acc, 0);
+            //find players with most steals
+    const longNamedPlayerSteals = collectionTwo.reduce((acc, [playerName, stats]) =>
+        playerName === longNamedPlayer ? stats.steals : acc, 0);
+    return longNamedPlayerSteals === topSteals;
 }
+console.log('Does longnamed players have most steals:', doesLongNameStealATon())
