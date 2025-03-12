@@ -1,4 +1,8 @@
-const gameObject = () => {
+//Keeping stats of a match with a home team and away team
+//gameobject() returns an object with the two teams' values
+
+const match = gameObject()
+function gameObject() {
     return {
         home: {
             teamName: 'Brooklyn Nets',
@@ -116,20 +120,17 @@ const gameObject = () => {
         }
     }
 }
-gameObject();
 
-//Get the player's points 
-function numPointsScored(playerName) {
-    const scoredPoints = gameObject();
-
-    if (scoredPoints.home.players[playerName]) {
-        return scoredPoints.home.players[playerName].points;
-    }
-    if (scoredPoints.away.players[playerName]) {
-        return scoredPoints.home.players[playerName].points;
-    }
-    return `${playerName} is unavailable.`; 
+//Get the player and points 
+function returnPlayer(playerName) {
+    return match.home.players[playerName] || match.away.players[playerName] || undefined;
 }
+
+function numPointsScored(playerName) {
+    const player = returnPlayer(playerName);
+    return player ? player.points : `${playerName} NOT FOUND!`;
+}
+console.log(numPointsScored('Reggie Evans'))
 
 //get the player's show size
 function shoeSize(playerName) {
@@ -139,6 +140,7 @@ function shoeSize(playerName) {
         return playerShoeSize.home.players[playerName].shoe;
     }
     if (playerShoeSize.away.players[playerName]) {
+
         return playerShoeSize.away.players[playerName].shoe;
     }
     return `Sorry, try another ${playerName}`;
