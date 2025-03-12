@@ -121,58 +121,44 @@ function gameObject() {
     }
 }
 
-//Get the player and points 
+//Helper functions for playerName and TeamName
 function returnPlayer(playerName) {
-    return match.home.players[playerName] || match.away.players[playerName] || undefined;
+    return match.home.players[playerName] || 
+    match.away.players[playerName] || undefined;
+}
+function returnTeam(teamName) {
+    return [match.home, match.away].find(team => 
+        team.teamName === teamName) || undefined;
 }
 
-function numPointsScored(playerName) {
+//Function Building  
+function numPointsScored(playerName) { //Get points
     const player = returnPlayer(playerName);
-    return player ? player.points : `${playerName} NOT FOUND!`;
+    return player ? player.points : undefined;
 }
-console.log(numPointsScored('Reggie Evans'))
+console.log('The points are:',numPointsScored('Alan Anderson'))
 
-//get the player's show size
-function shoeSize(playerName) {
-    const playerShoeSize = gameObject();
-
-    if (playerShoeSize.home.players[playerName]) {
-        return playerShoeSize.home.players[playerName].shoe;
-    }
-    if (playerShoeSize.away.players[playerName]) {
-
-        return playerShoeSize.away.players[playerName].shoe;
-    }
-    return `Sorry, try another ${playerName}`;
+function shoeSize(playerName) {      //get shoe size
+    const player = returnPlayer(playerName);
+    return player ? player.shoe : undefined
 }
+console.log('The shoe size is:',shoeSize('Alan Anderson'))
 
-//get an array of team's colors
-function teamColors(teamName) {
-    const identifierColor = gameObject();
-
-    if (identifierColor.home.teamName === teamName) {
-        return identifierColor.home.colors;
-    }
-     if (identifierColor.away.teamName === teamName) {
-        return identifierColor.away.colors;
-    }
-    return 'Not found!';
+function teamColors(teamName) {       //get an array of team's colors
+    const team = returnTeam(teamName);
+    return team ? team.colors : undefined;
 }
+console.log('The team colors are:', teamColors('Harambee'))
 
-//get an array of team names
-const teamNames = () => 
-    [gameObject().home.teamName, gameObject().away.teamName];
+const teamNames = () =>                //get an array of teamNames
+    [match.home.teamName, match.away.teamName];
+console.log('Teamnames are:', teamNames())
 
-//get a team's jersey numbers
-function playerNumbers(teamName) {
-    const  match = gameObject();
-    for (const team of [match.home, match.away]) {
-        if(team.teamName === teamName) {
-            return Object.values(team.players).map(p => p.number);
-        }
-    }
-    return 'Not found!';
+function playerNumbers(teamName) {     //get jersey numbers
+    const team = returnTeam(teamName);
+    return team ? Object.values(team.players).map(p => p.number) : undefined
 }
+console.log('Jersey Numbers are:', playerNumbers('Charlotty'))
 
 //get an object of player's stats
 function playerStats(playerName) {
