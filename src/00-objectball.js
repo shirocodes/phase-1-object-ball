@@ -1,7 +1,8 @@
 //Keeping stats of a match with a home team and away team
 //gameobject() returns an object with the two teams' values
+//Create functions to solve questions
 
-const match = gameObject()
+const match = gameObject() //Cache the func for reusability in all functions
 function gameObject() {
     return {
         home: {
@@ -124,48 +125,47 @@ function gameObject() {
 //Helper functions for playerName and TeamName
 function returnPlayer(playerName) {
     return match.home.players[playerName] || 
-    match.away.players[playerName] || undefined;
+        match.away.players[playerName] || undefined;
 }
 function returnTeam(teamName) {
     return [match.home, match.away].find(team => 
         team.teamName === teamName) || undefined;
 }
 
-//Function Building  
-function numPointsScored(playerName) { //Get points
+                            //Function Building 
+//Get points 
+function numPointsScored(playerName) { 
     const player = returnPlayer(playerName);
     return player ? player.points : undefined;
 }
-console.log('The points are:',numPointsScored('Alan Anderson'))
 
-function shoeSize(playerName) {      //get shoe size
+//get shoe size
+function shoeSize(playerName) {      
     const player = returnPlayer(playerName);
     return player ? player.shoe : undefined
 }
-console.log('The shoe size is:',shoeSize('Alan Anderson'))
 
-function teamColors(teamName) {       //get an array of team's colors
+//get an array of team's colors
+function teamColors(teamName) {       
     const team = returnTeam(teamName);
     return team ? team.colors : undefined;
 }
-console.log('The team colors are:', teamColors('Harambee'))
 
-const teamNames = () =>                //get an array of teamNames
+//get an array of teamNames
+const teamNames = () =>                
     [match.home.teamName, match.away.teamName];
-console.log('Teamnames are:', teamNames())
 
-function playerNumbers(teamName) {     //get jersey numbers
+//get jersey numbers
+function playerNumbers(teamName) {     
     const team = returnTeam(teamName);
     return team ? Object.values(team.players).map(p => p.number) : undefined
 }
-console.log('Jersey Numbers are:', playerNumbers('Charlotty'))
 
 //get player's stats
 function playerStats(playerName) {     
     const player = returnPlayer(playerName);
     return player || undefined
 }
-console.log('The stats are:', playerStats('Bismak Biyombo'))
 
 //Find largest shoe-sized player's rebounds
 function bigShoeRebounds(){
@@ -178,7 +178,6 @@ function bigShoeRebounds(){
         player.shoe > acc.shoe ? player : acc, collectionOne[0]);
     return largeSizePlayer.rebounds;
 }
-console.log('the bigfoot has:', bigShoeRebounds())
 
 //find the player with most points
 const collectionTwo = [     //collecting players into one array
@@ -191,22 +190,23 @@ function mostPointsScored() {
         stats.points > acc[1].points ? [playerName, stats] : acc, collectionTwo[0]);
     return topScorer[0];  
 }
-console.log('Most points:', mostPointsScored())
 
 //Team with most points
 const winningTeam = () => {
     const teams = [match.home, match.away];
-    if (!teams.length) return 'Undefined teams.';
-    const topTeam = teams.reduce( (acc, team) => {
+    if (!teams.length) return undefined;
+
+    const topTeam = teams.reduce( (acc, team) => { //for each team in teams
+        //sum the current team's points
         const allPoints = Object.values(team.players).reduce((amount, player) => {
             return amount + player.points;
         }, 0);
-        return allPoints > acc.points ? {nameOfTeam: team.teamName, points: allPoints} : acc;   
-    }, {nameOfTeam: teams[0].teamName, points: Object.values(teams[0].players).reduce((amount, player) =>
+        //compare to return winning team
+        return allPoints > acc.points ? {nameOfTeam: team.teamName, points: allPoints} : acc;}, 
+            {nameOfTeam: teams[0].teamName, points: Object.values(teams[0].players).reduce((amount, player) =>
             amount + player.points, 0)})
     return topTeam.nameOfTeam;
 }
-console.log('the winning team is:', winningTeam())
 
 //Finding the player with longest name
 const playerWithLongestName = () => {
@@ -214,16 +214,16 @@ const playerWithLongestName = () => {
         ...Object.keys(match.home.players),
         ...Object.keys(match.away.players)
     ];
-    if (!namingCollection.length) return undefined
+    if (!namingCollection.length) return undefined;
     return namingCollection.reduce((acc, playerName) => 
         playerName.length > acc.length ? playerName : acc,namingCollection);
 }
-console.log('this player is:', playerWithLongestName())
 
 //finding if longnamedplayers has most steals
 const doesLongNameStealATon = () => {
     if (!collectionTwo.length) return undefined; //Reusing collection in mostPointsScored()
     const longNamedPlayer = playerWithLongestName();
+
     if (longNamedPlayer === 'undefined players') return undefined;
             //get the longnamedplayer's steals
     const topSteals = collectionTwo.reduce((acc, [, stats]) => 
@@ -233,4 +233,3 @@ const doesLongNameStealATon = () => {
         playerName === longNamedPlayer ? stats.steals : acc, 0);
     return longNamedPlayerSteals === topSteals;
 }
-console.log('Does longnamed players have most steals:', doesLongNameStealATon())
